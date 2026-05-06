@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { cp, mkdir, readdir, rm } from 'node:fs/promises';
+import { cp, mkdir, readdir, rm, readFile, writeFile } from 'node:fs/promises';
 import { basename, join, resolve } from 'node:path';
 
 const rootDir = process.env.CAPACITOR_ROOT_DIR;
@@ -10,6 +10,20 @@ const configJson = process.env.CAPACITOR_CONFIG;
 const log = (message) => console.log(`[ssl-pinning] ${message}`);
 const fail = (message) => {
   throw new Error(`[ssl-pinning] ${message}`);
+};
+
+const pemToDer = (pem) => {
+  const match = pem.match(/-----BEGIN CERTIFICATE-----([\s\S]*?)-----END CERTIFICATE-----/);
+  if (!match) {
+    return null;
+  }
+
+  const base64 = match[1].replace(/[\r\n\s]/g, '');
+  if (!base64) {
+    return null;
+  }
+
+  return Buffer.from(base64, 'base64');
 };
 
 if (!rootDir || !webDir || !configJson) {
@@ -46,6 +60,19 @@ for (const existingEntry of await readdir(targetDir, { withFileTypes: true })) {
 }
 
 for (const { source, fileName } of sourceFiles) {
-  await cp(source, join(targetDir, fileName), { force: true });
+  const targetPath = join(targetDir, fileName);
+  const buffer = await readFile(source);
+  const head = buffer.subarray(0, 2048).toString('utf8');
+  if (head.includes('-----BEGIN CERTIFICATE-----')) {
+    const der = pemToDer(buffer.toString('utf8'));
+    if (!der || der.length === 0) {
+      fail(`Failed to decode PEM certificate ${fileName}.`);
+    }
+    await writeFile(targetPath, der);
+    log(`Converted PEM ${fileName} into DER at ${targetDir}`);
+    continue;
+  }
+
+  await cp(source, targetPath, { force: true });
   log(`Copied ${fileName} into ${targetDir}`);
 }

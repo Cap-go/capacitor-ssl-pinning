@@ -40,7 +40,7 @@ const config: CapacitorConfig = {
       enabled: true,
     },
     SSLPinning: {
-      certs: ['sslCerts/production/primary.cer', 'sslCerts/production/backup.cer'],
+      certs: ['sslCerts/production/primary.cer', 'sslCerts/production/backup.der'],
       excludedDomains: ['https://analytics.google.com'],
     },
   },
@@ -49,7 +49,7 @@ const config: CapacitorConfig = {
 export default config;
 ```
 
-During `bunx cap sync`, the plugin copies the configured certificates into `webDir/certs`, which lets both native implementations load them from the bundled app assets.
+During `bunx cap sync`, the plugin copies the configured certificates into `webDir/certs`, which lets both native implementations load them from the bundled app assets. Both `.cer` and `.der` are supported; PEM `.cer` files are converted to DER automatically for iOS.
 
 ## Usage
 
