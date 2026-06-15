@@ -1,3 +1,5 @@
+import { CapacitorUpdater } from '@capgo/capacitor-updater';
+import { Capacitor } from '@capacitor/core';
 import './style.css';
 import { SSLPinning } from '@capgo/capacitor-ssl-pinning';
 
@@ -39,3 +41,9 @@ versionButton.addEventListener('click', async () => {
 });
 
 refreshConfiguration();
+
+if (Capacitor.isNativePlatform()) {
+  CapacitorUpdater.notifyAppReady().catch((error) => {
+    console.error('Capgo notifyAppReady failed', error);
+  });
+}
