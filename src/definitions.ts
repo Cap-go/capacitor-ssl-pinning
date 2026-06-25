@@ -37,6 +37,10 @@ export interface SSLPinningPluginConfig {
    *
    * During `bunx cap sync`, this plugin copies them into `webDir/certs` so native runtimes can load them from
    * the bundled web assets.
+   *
+   * Both `.cer` and `.der` filenames are supported. iOS requires DER-encoded X.509 certificates; when a
+   * certificate file is provided in PEM form (for example a `.cer` containing `-----BEGIN CERTIFICATE-----`),
+   * the sync hook converts it to DER while keeping the same filename.
    */
   certs?: string[];
 

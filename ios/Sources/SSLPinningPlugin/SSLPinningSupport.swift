@@ -85,8 +85,9 @@ final class SSLPinningCertificateStore {
 
     private func loadCertificate(from configuredPath: String) throws -> SecCertificate {
         let fileName = URL(fileURLWithPath: configuredPath).lastPathComponent
-        guard let resourceURL = Bundle.main.resourceURL?.appendingPathComponent("public/certs/\(fileName)"),
-              let certificateData = try? Data(contentsOf: resourceURL),
+        let candidateFileNames = SSLPinningCertificateStore.candidateFileNames(for: fileName)
+
+        guard let certificateData = SSLPinningCertificateStore.loadBundledCertificateData(candidateFileNames: candidateFileNames),
               let certificate = SecCertificateCreateWithData(nil, certificateData as CFData)
         else {
             throw NSError(
@@ -97,6 +98,73 @@ final class SSLPinningCertificateStore {
         }
 
         return certificate
+    }
+
+    private static func candidateFileNames(for fileName: String) -> [String] {
+        var candidates = [fileName]
+        let url = URL(fileURLWithPath: fileName)
+        let ext = url.pathExtension.lowercased()
+        let base = url.deletingPathExtension().lastPathComponent
+
+        if ext == "cer" {
+            candidates.append("\(base).der")
+        } else if ext == "der" {
+            candidates.append("\(base).cer")
+        }
+
+        return candidates
+    }
+
+    private static func loadBundledCertificateData(candidateFileNames: [String]) -> Data? {
+        guard let resourceURL = Bundle.main.resourceURL else {
+            return nil
+        }
+
+        for fileName in candidateFileNames {
+            let candidateURL = resourceURL.appendingPathComponent("public/certs/\(fileName)")
+            guard let data = try? Data(contentsOf: candidateURL) else {
+                continue
+            }
+
+            if let decoded = decodePEMCertificateIfNeeded(data) {
+                return decoded
+            }
+
+            return data
+        }
+
+        return nil
+    }
+
+    private static func decodePEMCertificateIfNeeded(_ data: Data) -> Data? {
+        guard let text = String(data: data, encoding: .utf8),
+              text.contains("-----BEGIN CERTIFICATE-----")
+        else {
+            return nil
+        }
+
+        let beginMarker = "-----BEGIN CERTIFICATE-----"
+        let endMarker = "-----END CERTIFICATE-----"
+
+        guard let beginRange = text.range(of: beginMarker),
+              let endRange = text.range(of: endMarker, range: beginRange.upperBound..<text.endIndex)
+        else {
+            return nil
+        }
+
+        let base64Body = text[beginRange.upperBound..<endRange.lowerBound]
+            .replacingOccurrences(of: "\r", with: "")
+            .replacingOccurrences(of: "\n", with: "")
+            .replacingOccurrences(of: " ", with: "")
+            .replacingOccurrences(of: "\t", with: "")
+
+        guard let decoded = Data(base64Encoded: String(base64Body), options: [.ignoreUnknownCharacters]),
+              !decoded.isEmpty
+        else {
+            return nil
+        }
+
+        return decoded
     }
 }
 
