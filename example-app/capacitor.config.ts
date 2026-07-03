@@ -4,7 +4,7 @@ import pkg from './package.json';
 
 const config: CapacitorConfig = {
   appId: 'app.capgo.sslpinning.example',
-  appName: 'SSL Pinning Example',
+  appName: '@capgo/capacitor-ssl-pinning',
   webDir: 'dist',
   plugins: {
     CapacitorHttp: {
