@@ -18,7 +18,7 @@ Add SSL certificate pinning to your Capacitor app's native HTTP requests on iOS 
 ## Key features
 
 - **Config only**: list certificate files under `plugins.SSLPinning.certs` in `capacitor.config`.
-- **CapacitorHttp**: pinning applies to `CapacitorHttp` requests when it is enabled.
+- **CapacitorHttp**: pinning applies to `CapacitorHttp` requests when it is enabled and at least one certificate is listed.
 - **Sync hook**: `cap sync` copies the certificates and converts PEM files to DER for iOS.
 - **Exclusions**: `excludedDomains` lets chosen URLs skip pinning.
 - **Inspect**: `getConfiguration()` returns the active native configuration.
