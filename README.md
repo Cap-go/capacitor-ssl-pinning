@@ -1,10 +1,28 @@
 # @capgo/capacitor-ssl-pinning
-<a href="https://capgo.app/"><img src="https://capgo.app/readme-banner.svg?repo=Cap-go/capacitor-ssl-pinning" alt="Capgo - Instant updates for Capacitor" /></a>
+
+Add SSL certificate pinning to your Capacitor app's native HTTP requests on iOS and Android, so your API traffic only trusts your own certificates.
+
+<a href="https://capgo.app/?ref=plugin_ssl_pinning"><img src="https://capgo.app/readme-banner.svg?repo=Cap-go/capacitor-ssl-pinning" alt="Capgo - Instant updates for Capacitor" /></a>
 
 <div align="center">
-  <h2><a href="https://capgo.app/?ref=plugin_ssl_pinning"> ➡️ Get Instant updates for your App with Capgo</a></h2>
-  <h2><a href="https://capgo.app/consulting/?ref=plugin_ssl_pinning"> Missing a feature? We’ll build the plugin for you 💪</a></h2>
+  <p><b>Capgo</b>: open-source live updates for Ionic and Capacitor apps. Ship OTA fixes and features instantly, without waiting for app store review.</p>
+  <h2><a href="https://capgo.app/register/?ref=plugin_ssl_pinning">➡️ Get started for free</a></h2>
+  <p>14-day unlimited free trial. No credit card required</p>
+  <p><a href="https://capgo.app/consulting/?ref=plugin_ssl_pinning">Missing a feature? We'll build the plugin for you 💪</a></p>
 </div>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Cap-go/capacitor-ssl-pinning/main/assets/github-social-preview.png" alt="@capgo/capacitor-ssl-pinning for Capacitor apps" width="300" />
+</p>
+
+## Key features
+
+- **Config only**: list certificate files under `plugins.SSLPinning.certs` in `capacitor.config`.
+- **CapacitorHttp**: pinning applies to `CapacitorHttp` requests when it is enabled.
+- **Sync hook**: `cap sync` copies the certificates and converts PEM files to DER for iOS.
+- **Exclusions**: `excludedDomains` lets chosen URLs skip pinning.
+- **Inspect**: `getConfiguration()` returns the active native configuration.
+- **Platforms**: iOS and Android. Not available on web.
 
 Capgo SSL Pinning brings certificate pinning to Capacitor 8 apps by integrating with `CapacitorHttp` on Android and iOS.
 
