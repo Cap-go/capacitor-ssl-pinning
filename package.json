@@ -12,7 +12,7 @@
     "dist/",
     "ios/Sources",
     "ios/Tests",
-    "scripts/",
+    "scripts/prepare-certs.mjs",
     "Package.swift",
     "CapgoCapacitorSslPinning.podspec"
   ],
